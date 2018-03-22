@@ -1,12 +1,12 @@
-#!/usr/bin/python
-# Change 'python' above to python2 or python3 to detect which version you use.
+#!/usr/bin/python3
 
 N = 15
 
 # The main routine of AI.
+# input: str[N] field : state of the field.
+# output: int[2] : where to put a stone in this turn.
 def Think(field):
-  # // is not defined in python2
-  CENTER = (int(N / 2), int(N / 2))
+  CENTER = (N // 2, N // 2)
 
   best_hand = (0, 0)
   for i in range(N):
@@ -53,17 +53,11 @@ def main():
   Output(hand)
 
 def Input():
-  try:
-    # python2.7
-    field = [raw_input() for i in range(N)]
-  except NameError:
-    # python3.x does not have raw_input() definition
-    field = [input() for i in range(N)]
-
+  field = [input() for i in range(N)]
   return field
 
 def Output(hand):
-  print(str(hand[0]) + ' ' + str(hand[1]))
+  print('{0} {1}'.format(hand[0], hand[1]))
 
 if __name__  == '__main__':
   main()

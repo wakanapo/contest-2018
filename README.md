@@ -1,35 +1,29 @@
 STEP Coding Camp 2018 Programming Contest
 =========================================
 
-STEP Coding Camp 2018 で行われる Programming Contest で使うプログラムです。ファイル構成は以下のようになっています。
-
-```
-+ sample/           : サンプルコードを入れたディレクトリ
-| + gomoku.cc
-| + Gomoku.java
-| + gomoku.py
-+ gomoku_server.py  : 対戦用スクリプト
-+ README.md         : このファイルです
-```
+STEP Coding Camp 2018 で行われる Programming Contest で使うプログラムです。
 
 ファイルの説明
 ============
-`sample/`
+
+プログラムは python3 を用いて書かれています。
+
+`gomoku.py`
 ---------
-C/C++、Java、Python のそれぞれで実装されたサンプルコードです。これらのファイルで定義されている `Think()` を改造してもらいます。`Input()`、`Output()`、`main()` は変更しないでください。また、Python のコードでバージョン依存の機能を使う場合は使うバージョンに合わせて 1 行目にある
+サンプルコードです。このファイルで定義されている `Think()` を改造してもらいます。下にある `Input()`、`Output()`、`main()` は変更しないでください。また `Think()` の入出力のデータ形式も変更しないでください。
 
-```
-#!/usr/bin/python
-```
-
-の末尾 (`python`) を `python2` か `python3` に変更してください。
-
-`gomoku_server.py`
+`server.py`
 ------------------
-AI 同士を対戦させるスクリプトです。
+AI を対戦させるスクリプトです。
 
 ```
- $ gomoku_server.py foo/Gomoku.java bar/gomoku
+ $ ./server.py my_gomoku.py gomoku.py
 ```
 
-のようにプログラムのソースコードもしくは実行ファイル名を 2 つ引数に与えるとそれらを使って対戦してくれます。ソースコードを与えた場合は必要があればコンパイルしてくれます。
+のようにプログラムを 2 つ引数に与えると 1 つ目のプログラムを先攻(`O`)、2 つ目のプログラムを後攻(`X`)として対戦させます。また
+
+```
+ $ ./server.py my_gomoku.py
+```
+
+のように 2 つめのプログラムの指定を省略した場合は `gomoku.py` を後攻に指定したものとして対戦させます。

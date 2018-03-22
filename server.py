@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/python3
 
 import os
 import sys
@@ -9,16 +9,16 @@ class Game(object):
   NUM_PLAYERS = 2
 
   def __init__(self):
-    self.board_ = [[0] * Game.N for _ in xrange(Game.N)]
+    self.board_ = [[0] * Game.N for _ in range(Game.N)]
     self.playing_id_ = 1
     self.passes_ = 0
 
   def get_state(self, id):
-    return '\n'.join([''.join([self.get_stone(i, j, id) for j in xrange(Game.N)])
-                      for i in xrange(Game.N)]) + '\n'
+    return '\n'.join([''.join([self.get_stone(i, j, id) for j in range(Game.N)])
+                      for i in range(Game.N)]) + '\n'
 
   def get_stone(self, i, j, c):
-    if i not in xrange(Game.N) or j not in xrange(Game.N):
+    if i not in range(Game.N) or j not in range(Game.N):
       return ' '
     b = self.board_[i][j]
     return '.' if b is 0 else 'O' if b == c else 'X'
@@ -41,23 +41,23 @@ class Game(object):
     self.playing_id_ = self.playing_id_ % Game.NUM_PLAYERS + 1
 
   def is_over(self):
-    for i in xrange(Game.N):
-      for j in xrange(Game.N):
+    for i in range(Game.N):
+      for j in range(Game.N):
         c = self.board_[i][j]
         if c == 0:
           continue
-        if (all(self.get_stone(i+k, j, c) == 'O' for k in xrange(5)) or
-            all(self.get_stone(i, j+k, c) == 'O' for k in xrange(5)) or
-            all(self.get_stone(i+k, j+k, c) == 'O' for k in xrange(5)) or
-            all(self.get_stone(i+k, j-k, c) == 'O' for k in xrange(5))):
+        if (all(self.get_stone(i+k, j, c) == 'O' for k in range(5)) or
+            all(self.get_stone(i, j+k, c) == 'O' for k in range(5)) or
+            all(self.get_stone(i+k, j+k, c) == 'O' for k in range(5)) or
+            all(self.get_stone(i+k, j-k, c) == 'O' for k in range(5))):
           return True
     return False
 
 
 class Player(object):
-  def __init__(self, id, ai):
+  def __init__(self, id, filepath):
     self.id_ = id
-    self.command_ = ('java ' + ai) if ai[0].isupper() else ai
+    self.path_ = filepath
 
   def play(self, game):
     state = game.get_state(self.id)
@@ -65,16 +65,20 @@ class Player(object):
                              stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE,
                              shell=True)
-    place = child.communicate(state)[0]
-    return map(int, place.strip().split(' '))
+    place = child.communicate(state.encode())[0]
+    return list(map(int, place.strip().split(b' ')))
 
   @property
   def id(self):
     return self.id_
 
   @property
+  def path(self):
+    return self.path_
+
+  @property
   def command(self):
-    return self.command_
+    return 'python3 ' + self.path
 
 
 class Gomoku(object):
@@ -85,9 +89,9 @@ class Gomoku(object):
   def run_game(self):
     winner = self.run_loop()
     if winner.id > 0:
-      print '%s won the game' % winner.command
+      print('{0} won the game'.format(winner.path))
     else:
-      print 'Draw game'
+      print('Draw game')
 
   def run_loop(self):
     game = self.game_
@@ -96,40 +100,24 @@ class Gomoku(object):
         place = player.play(game)
         if game.put_stone(place):
           # Dump board state from 1st player's view
-          print game.get_state(1)
+          print(game.get_state(1))
           # Wins the game
           if game.is_over():
             return player
         else:
-          print 'Pass'
+          print('Pass')
           if not game.play_pass():
             # draw game
             return Player(0, '')
 
 
-# Compile source code if needed, and returns the command to launch the program.
-def Compile(filename):
-  basepath, ext = os.path.splitext(filename)
-  basename = os.path.basename(basepath)
-  if ext in ('.cc', '.cpp'):
-    # C++
-    subprocess.call(['g++', '-O3', '-W', '-std=c++14', '-o', basename, filename])
-    return './' + basename
-  elif ext == '.java':
-    # Java
-    subprocess.call(['javac', '-d', '.', filename])
-    return basename
-  elif ext == '.py':
-    # Python
-    return filename
-  raise ValueError('Unknown extension: %s' % ext)
-
-
 def main():
-  if len(sys.argv) != 3:
-    print >> sys.stderr, 'Usage: %s <code1> <code2>' % sys.argv[0]
+  if len(sys.argv) == 1:
+    print('Usage: {0} <code1> [<code2>]'.format(sys.argv[0]), file=sys.stderr)
     return
-  ai = [Compile(filename) for filename in sys.argv[1:]]
+  ai = [filename for filename in sys.argv[1:]]
+  if len(ai) < 2:
+    ai.append('gomoku.py')
   gomoku = Gomoku(ai)
   gomoku.run_game()
 
