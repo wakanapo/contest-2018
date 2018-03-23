@@ -3,7 +3,7 @@
 N = 15
 
 # The main routine of AI.
-# input: str[N] field : state of the field.
+# input: str[N][N] field : state of the field.
 # output: int[2] : where to put a stone in this turn.
 def Think(field):
   CENTER = (int(N / 2), int(N / 2))
