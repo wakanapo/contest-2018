@@ -6,38 +6,54 @@ N = 15
 # input: str[N] field : state of the field.
 # output: int[2] : where to put a stone in this turn.
 def Think(field):
-  CENTER = (N // 2, N // 2)
+  CENTER = (int(N / 2), int(N / 2))
 
-  best_hand = (0, 0)
+  best_position = (0, 0)
   for i in range(N):
     for j in range(N):
       if field[i][j] != '.':
         continue
 
-      hand = (i, j)
-      if CanGetFiveStones(field, hand):
-        return hand
-      if GetDistance(best_hand, CENTER) > GetDistance(hand, CENTER):
-        best_hand = hand
-  return best_hand
+      position = (i, j)
+      # Assume to put a stone on (i, j).
+      field[i][j] = 'O'
+      if DoHaveFiveStones(field, position):
+        return position
+      field[i][j] = '.'
+      if GetDistance(best_position, CENTER) > GetDistance(position, CENTER):
+        best_position = position
+  return best_position
 
-# Returns true if you can get five stones from |position|. Returns false otherwise.
-def CanGetFiveStones(field, hand):
-  # Checks all 8 directions.
-  return any(CountStones(field, hand, diffs[0]) + CountStones(field, hand, diffs[1]) + 1 >= 5
-             for diffs in [[(-1, -1), (1, 1)], [(-1, 0), (1, 0)],
-                           [(-1, 1), (1, -1)], [(0, -1), (0, 1)]])
+# Returns true if you have a five-stones line from |position|. Returns false otherwise.
+def DoHaveFiveStones(field, position):
+  return (CountStonesOnLine(field, position, (1, 1)) >= 5 or
+          CountStonesOnLine(field, position, (1, 0)) >= 5 or
+          CountStonesOnLine(field, position, (1, -1)) >= 5 or
+          CountStonesOnLine(field, position, (0, 1)) >= 5)
 
-# Returns the number of stones on the direction |diff| from the next position of |position|.
-def CountStones(field, hand, diff):
-  count = 1
+# Returns the number of stones on the line segment on the direction of |diff| from |position|.
+def CountStonesOnLine(field, position, diff):
+  count = 0
+
+  row = position[0]
+  col = position[1]
   while True:
-    row, col = (hand[0] + count * diff[0], hand[1] + count * diff[1])
     if row < 0 or col < 0 or row >= N or col >= N or field[row][col] != 'O':
-      return count - 1
-    count = count + 1
-  # Not reached
-  return 0
+      return count
+    row += diff[0]
+    col += diff[1]
+    count += 1
+
+  row = position[0] - diff[0]
+  col = position[1] - diff[1]
+  while True:
+    if row < 0 or col < 0 or row >= N or col >= N or field[row][col] != 'O':
+      return count
+    row -= diff[0]
+    col -= diff[1]
+    count += 1
+
+  return -1
 
 # Returns the Manhattan distance from |a| to |b|.
 def GetDistance(a, b):
@@ -49,15 +65,15 @@ def GetDistance(a, b):
 
 def main():
   field = Input()
-  hand = Think(field)
-  Output(hand)
+  position = Think(field)
+  Output(position)
 
 def Input():
-  field = [input() for i in range(N)]
+  field = [list(input()) for i in range(N)]
   return field
 
-def Output(hand):
-  print('{0} {1}'.format(hand[0], hand[1]))
+def Output(position):
+  print(position[0], position[1])
 
 if __name__  == '__main__':
   main()
