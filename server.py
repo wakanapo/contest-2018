@@ -113,7 +113,13 @@ class Gomoku(object):
 
 def main():
   if len(sys.argv) == 1:
-    print('Usage: {0} <code1> [<code2>]'.format(sys.argv[0]), file=sys.stderr)
+    print("""
+Usage:
+ {0} player1 player2
+    player1 and player2 are names of pythoncode, e.g. gomoku.py.
+    player1 works as the firsr-hand player, and player2 works as the second-hand player.
+    If you ommit player2, we assume 'gomoku.py' as player2.""".format(sys.argv[0]),
+          file=sys.stderr)
     return
   ai = [filename for filename in sys.argv[1:]]
   if len(ai) < 2:
