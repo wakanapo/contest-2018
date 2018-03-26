@@ -97,9 +97,12 @@ class Gomoku(object):
     game = self.game_
     while True:
       for player in self.players_:
+        print("({1}){0}'s turn: ".format(player.path, 'O' if player.id == 1 else 'X'),
+              end='')
         place = player.play(game)
         if game.put_stone(place):
           # Dump board state from 1st player's view
+          print('Put ({0}, {1})'.format(place[0], place[1]))
           print(game.get_state(1))
           # Wins the game
           if game.is_over():
