@@ -39,7 +39,7 @@ def CountStonesOnLine(field, position, diff):
   col = position[1]
   while True:
     if row < 0 or col < 0 or row >= N or col >= N or field[row][col] != 'O':
-      return count
+      break
     row += diff[0]
     col += diff[1]
     count += 1
@@ -48,12 +48,12 @@ def CountStonesOnLine(field, position, diff):
   col = position[1] - diff[1]
   while True:
     if row < 0 or col < 0 or row >= N or col >= N or field[row][col] != 'O':
-      return count
+      break
     row -= diff[0]
     col -= diff[1]
     count += 1
 
-  return -1
+  return count
 
 # Returns the Manhattan distance from |a| to |b|.
 def GetDistance(a, b):
