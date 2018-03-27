@@ -18,7 +18,9 @@ def Think(field):
       # Assume to put a stone on (i, j).
       field[i][j] = 'O'
       if DoHaveFiveStones(field, position):
+        DebugPrint('I have a winning choice at (%d, %d)' % (i, j))
         return position
+      # Revert the assumption.
       field[i][j] = '.'
       if GetDistance(best_position, CENTER) > GetDistance(position, CENTER):
         best_position = position
@@ -58,6 +60,11 @@ def CountStonesOnLine(field, position, diff):
 # Returns the Manhattan distance from |a| to |b|.
 def GetDistance(a, b):
   return abs(a[0] - b[0]) + abs(a[1] - b[1])
+
+# Outputs |msg| to stderr; This is actually a thin wrapper of print().
+def DebugPrint(msg):
+  import sys
+  print(msg, file=sys.stderr)
 
 # =============================================================================
 # DO NOT EDIT FOLLOWING FUNCTIONS
