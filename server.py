@@ -64,8 +64,12 @@ class Player(object):
         child = subprocess.Popen(self.command,
                                  stdin=subprocess.PIPE,
                                  stdout=subprocess.PIPE,
+                                 stderr=subprocess.PIPE,
                                  shell=True)
-        place = child.communicate(state.encode())[0]
+        place, message = child.communicate(state.encode())
+        message = message.decode()
+        if message != '':
+            print(message)
         return list(map(int, place.strip().split(b' ')))
 
     @property
@@ -97,8 +101,10 @@ class Gomoku(object):
         game = self.game_
         while True:
             for player in self.players_:
-                print("({1}){0}'s turn: ".format(player.path, 'O' if player.id == 1 else 'X'), end='')
                 place = player.play(game)
+
+                print("({1}){0}'s turn: ".format(player.path, 'O' if player.id == 1 else 'X'),
+                      end='')
                 if game.put_stone(place):
                     # Dump board state from 1st player's view
                     print('Put ({0}, {1})'.format(place[0], place[1]))
@@ -121,7 +127,7 @@ Usage:
         player1 and player2 are names of pythoncode, e.g. gomoku.py.
         player1 works as the firsr-hand player, and player2 works as the second-hand player.
         If you ommit player2, we assume 'gomoku.py' as player2.""".format(sys.argv[0]),
-                    file=sys.stderr)
+              file=sys.stderr)
         return
     ai = [filename for filename in sys.argv[1:]]
     if len(ai) < 2:
