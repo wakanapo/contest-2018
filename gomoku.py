@@ -17,7 +17,7 @@ def Think(field):
             position = (i, j)
             # Assume to put a stone on (i, j).
             field[i][j] = 'O'
-            if DoHaveFiveStones(field, position):
+            if CanHaveFiveStones(field, position):
                 DebugPrint('I have a winning choice at (%d, %d)' % (i, j))
                 return position
             # Revert the assumption.
@@ -27,15 +27,15 @@ def Think(field):
     return best_position
 
 
-# Returns true if you have a five-stones line from |position|. Returns false otherwise.
-def DoHaveFiveStones(field, position):
+# Returns true if you have five stones from |position|. Returns false otherwise.
+def CanHaveFiveStones(field, position):
     return (CountStonesOnLine(field, position, (1, 1)) >= 5 or
             CountStonesOnLine(field, position, (1, 0)) >= 5 or
             CountStonesOnLine(field, position, (1, -1)) >= 5 or
             CountStonesOnLine(field, position, (0, 1)) >= 5)
 
 
-# Returns the number of stones on the line segment on the direction of |diff| from |position|.
+# Returns the number of stones you can put around |position| in the direction specified by |diff|.
 def CountStonesOnLine(field, position, diff):
     count = 0
 
@@ -65,12 +65,6 @@ def GetDistance(a, b):
     return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
 
-# Outputs |msg| to stderr; This is actually a thin wrapper of print().
-def DebugPrint(msg):
-    import sys
-    print(msg, file=sys.stderr)
-
-
 # =============================================================================
 # DO NOT EDIT FOLLOWING FUNCTIONS
 # =============================================================================
@@ -80,12 +74,21 @@ def main():
     position = Think(field)
     Output(position)
 
+
 def Input():
     field = [list(input()) for i in range(N)]
     return field
 
+
 def Output(position):
     print(position[0], position[1])
+
+
+# Outputs |msg| to stderr; This is actually a thin wrapper of print().
+def DebugPrint(*msg):
+    import sys
+    print(*msg, file=sys.stderr)
+
 
 if __name__    == '__main__':
     main()
